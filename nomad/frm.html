@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Reserva</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            background-color: #4B0082;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #ffffff;
+        }
+
+        input[type="text"], input[type="number"], select, input[type="date"], input[type="time"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #8A2BE2;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #9370DB;
+        }
+
+        .menu-opciones {
+            margin-top: 20px;
+            border: 1px solid #fff;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .success-message {
+            display: none;
+            color: #00ff00;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        @media screen and (max-width: 600px) {
+            .form-container {
+                padding: 15px;
+                margin: 20px auto;
+                width: 95%;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+
+    </style>
+
+    <script>
+        // Función para generar dinámicamente los campos de menú por cada persona
+        function generarOpcionesMenu() {
+            const cantidadPersonas = document.getElementById('personas').value;
+            const contenedorMenus = document.getElementById('contenedorMenus');
+            contenedorMenus.innerHTML = ''; // Limpiar el contenedor antes de generar
+
+            for (let i = 1; i <= cantidadPersonas; i++) {
+                const div = document.createElement('div');
+                div.classList.add('menu-opciones');
+                div.innerHTML = `
+                    <h4>Persona ${i}</h4>
+                    <label for="condicion${i}">Condición alimentaria:</label>
+                    <select id="condicion${i}" name="condicion${i}" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="ninguno">Ninguno</option>
+                        <option value="vegetariano">Vegetariano</option>
+                        <option value="vegano">Vegano</option>
+                        <option value="intolerante_lactosa">Intolerante a la lactosa</option>
+                        <option value="otro">Otro</option>
+                    </select>
+
+                    <label for="tipoComida${i}">Tipo de comida:</label>
+                    <select id="tipoComida${i}" name="tipoComida${i}" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="colombiana">Colombiana</option>
+                        <option value="mexicana">Mexicana</option>
+                        <option value="italiana">Italiana</option>
+                        <option value="comidaRapida">Fast Food</option>
+                        <option value="mediterranea">Mediterranea</option>
+                        <option value="asiatica">Asiatica</option>
+                        <option value="aleatoria">Aleatoria</option>
+                    </select>
+                `;
+                contenedorMenus.appendChild(div);
+            }
+        }
+
+        // Función para mostrar u ocultar el campo de menú infantil según si llevan niños
+        function mostrarOpcionesNinos() {
+            const llevaNinos = document.querySelector('input[name="llevaNinos"]:checked').value;
+            const contenedorNinos = document.getElementById('contenedorNinos');
+
+            if (llevaNinos === "si") {
+                contenedorNinos.style.display = 'block';
+            } else {
+                contenedorNinos.style.display = 'none';
+            }
+        }
+
+        // Función para mostrar el menú infantil o personalizado
+        function mostrarMenuInfantil() {
+            const menuInfantil = document.getElementById('menuInfantil').value;
+            const contenedorNinosMenu = document.getElementById('contenedorNinosMenu');
+            contenedorNinosMenu.innerHTML = ''; // Limpiar el contenedor antes de generar
+
+            if (menuInfantil === "si") {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label for="opcionesMenuInfantil">Especifica el menú infantil:</label>
+                    <textarea id="opcionesMenuInfantil" name="opcionesMenuInfantil" placeholder="Especifica el menú infantil aquí"></textarea>
+                `;
+                contenedorNinosMenu.appendChild(div);
+            } else if (menuInfantil === "personalizado") {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label for="condicionNino">Condición alimentaria del niño:</label>
+                    <select id="condicionNino" name="condicionNino" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="ninguno">Ninguno</option>
+                        <option value="vegetariano">Vegetariano</option>
+                        <option value="vegano">Vegano</option>
+                        <option value="intolerante_lactosa">Intolerante a la lactosa</option>
+                        <option value="otro">Otro</option>
+                    </select>
+
+                    <label for="tipoComidaNino">Tipo de comida del niño:</label>
+                    <select id="tipoComidaNino" name="tipoComidaNino" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="colombiana">Colombiana</option>
+                        <option value="mexicana">Mexicana</option>
+                        <option value="italiana">Italiana</option>
+                        <option value="comidaRapida">Fast Food</option>
+                        <option value="mediterranea">Mediterranea</option>
+                        <option value="asiatica">Asiatica</option>
+                        <option value="aleatoria">Aleatoria</option>
+                    </select>
+                `;
+                contenedorNinosMenu.appendChild(div);
+            }
+        }
+
+        // Función para mostrar mensaje de éxito tras enviar el formulario
+        function mostrarMensajeExito(event) {
+            event.preventDefault(); // Evitar la recarga de la página
+            document.getElementById('successMessage').style.display = 'block';
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Formulario de Reserva</h2>
+
+        <form action="#" method="post" onsubmit="mostrarMensajeExito(event)">
+            <!-- Identificación -->
+            <label for="id">Identificación:</label>
+            <input type="text" id="id" name="id" required>
+
+            <!-- Nombre -->
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <!-- Cantidad de personas -->
+            <label for="personas">Cantidad de personas:</label>
+            <input type="number" id="personas" name="personas" min="1" required onchange="generarOpcionesMenu()">
+
+            <!-- Fecha de reserva -->
+            <label for="fecha">Fecha de la reserva:</label>
+            <input type="date" id="fecha" name="fecha" required>
+
+            <!-- Hora de reserva -->
+            <label for="hora">Hora de la reserva:</label>
+            <input type="time" id="hora" name="hora" required>
+
+            <!-- Nuevo campo para elegir ubicación de la experiencia -->
+            <label for="ubicacion">¿Dónde prefieres vivir esta experiencia?</label>
+            <select id="ubicacion" name="ubicacion" required>
+                <option value="">Selecciona una opción</option>
+                <option value="guatape">Guatapé</option>
+                <option value="campo">El campo</option>
+                <option value="ciudad">La ciudad</option>
+                <option value="montana">La montaña</option>
+            </select>
+
+            <!-- Llevan niños -->
+            <label>¿Llevan niños?</label>
+            <input type="radio" id="llevaNinosSi" name="llevaNinos" value="si" required onchange="mostrarOpcionesNinos()"> Sí
+            <input type="radio" id="llevaNinosNo" name="llevaNinos" value="no" required onchange="mostrarOpcionesNinos()"> No
+
+            <!-- Opciones menú infantil (solo si llevan niños) -->
+            <div id="contenedorNinos" style="display:none;">
+                <label for="menuInfantil">¿Deseas un menú infantil?</label>
+                <select id="menuInfantil" name="menuInfantil" onchange="mostrarMenuInfantil()">
+                    <option value="si">Sí, menú infantil</option>
+                    <option value="personalizado">No, un menú personalizado</option>
+                </select>
+
+                <div id="contenedorNinosMenu"></div>
+            </div>
+
+            <!-- Campos dinámicos para cada persona -->
+            <div id="contenedorMenus"></div>
+
+            <!-- Botón de envío -->
+            <input type="submit" value="Enviar">
+        </form>
+
+        <!-- Mensaje de éxito -->
+        <div id="successMessage" class="success-message">¡La reserva fue creada con éxito! Envianos la captura de pantalla a nuestro WhatsApp</div>
+    </div>
+
+</body>
+</html>
+
